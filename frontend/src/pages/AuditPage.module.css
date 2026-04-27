@@ -1,0 +1,46 @@
+.page { padding:2rem 2.25rem 3rem; max-width:1300px; margin:0 auto; }
+.header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem; }
+.eyebrow { font-size:0.65rem; font-weight:700; color:var(--negative); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; opacity:0.8; }
+.title   { font-size:1.5rem; font-weight:800; color:var(--text-1); letter-spacing:-0.03em; display:flex; align-items:center; }
+.subtitle{ font-size:0.82rem; color:var(--text-4); margin-top:5px; }
+
+.tableCard {
+  background:var(--glass-1); backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--gb-1); border-radius:var(--r-xl);
+  box-shadow:var(--shadow-card); overflow:hidden;
+  position:relative;
+}
+.tableCard::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,212,255,0.15),transparent); }
+
+.tableWrap { overflow-x:auto; }
+.table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+.table th {
+  text-align:left; padding:10px 14px;
+  font-size:0.62rem; font-weight:700; color:var(--text-4);
+  text-transform:uppercase; letter-spacing:0.08em;
+  border-bottom:1px solid var(--gb-1); white-space:nowrap;
+  background:rgba(0,212,255,0.03);
+}
+.table td { padding:10px 14px; color:var(--text-3); border-bottom:1px solid rgba(255,255,255,0.025); vertical-align:middle; }
+.table tr:last-child td { border-bottom:none; }
+.row { transition:background var(--t-fast); }
+.row:hover td { background:var(--glass-1); }
+
+.idCell       { color:var(--text-5); font-size:0.72rem; width:50px; }
+.timeCell     { font-size:0.75rem; color:var(--text-4); white-space:nowrap; }
+.resourceCell { max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.detailCell   { max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:0.75rem; color:var(--text-4); }
+.ipCell       { font-size:0.72rem; color:var(--text-5); font-family:monospace; }
+
+.userChip {
+  background:var(--glass-2); border:1px solid var(--gb-1);
+  color:var(--text-2); border-radius:var(--r-xs); padding:2px 8px;
+  font-size:0.72rem; font-weight:600;
+}
+.actionBadge {
+  border-radius:var(--r-xs); padding:2px 8px;
+  font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+}
+
+.pagination { display:flex; align-items:center; justify-content:center; gap:12px; padding:1rem; border-top:1px solid var(--gb-1); }
+.pageInfo { font-size:0.75rem; color:var(--text-4); }

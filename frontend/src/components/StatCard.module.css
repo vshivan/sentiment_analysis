@@ -1,61 +1,17 @@
 .card {
-  background: var(--glass-1);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid var(--gb-1);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-card);
-  overflow: hidden;
-  transition: border-color var(--t-base), box-shadow var(--t-base), transform var(--t-base);
-  position: relative;
+  background:var(--glass-1); backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--gb-1); border-radius:var(--r-lg);
+  box-shadow:var(--shadow-card); overflow:hidden;
+  transition:border-color var(--t-base), box-shadow var(--t-base), transform var(--t-base);
+  position:relative;
 }
-.card:hover {
-  border-color: var(--gb-2);
-  box-shadow: var(--shadow-card), var(--shadow-glow);
-  transform: translateY(-2px);
-}
-.accentLine {
-  height: 2px;
-  width: 100%;
-  opacity: 0.7;
-}
-.inner {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.125rem 1.25rem 1.25rem;
-}
-.iconWrap {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--r-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.body    { flex: 1; min-width: 0; }
-.title   {
-  font-size: 0.67rem;
-  font-weight: 700;
-  color: var(--text-4);
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  margin-bottom: 4px;
-}
-.value   {
-  font-size: 1.7rem;
-  font-weight: 800;
-  color: var(--text-1);
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-}
-.subtitle {
-  font-size: 0.72rem;
-  color: var(--text-4);
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.trend { font-weight: 700; font-size: 0.8rem; }
+.card:hover { border-color:var(--gb-2); box-shadow:var(--shadow-card), var(--shadow-cyan); transform:translateY(-2px); }
+.accentLine { height:2px; width:100%; opacity:0.7; }
+.inner { display:flex; align-items:flex-start; gap:1rem; padding:1.125rem 1.25rem 1.25rem; }
+.iconWrap { width:40px; height:40px; border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.body    { flex:1; min-width:0; }
+.title   { font-size:0.65rem; font-weight:700; color:var(--text-4); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:4px; }
+.value   { font-size:1.7rem; font-weight:800; color:var(--text-1); line-height:1.15; letter-spacing:-0.03em; }
+.subtitle{ font-size:0.72rem; color:var(--text-4); margin-top:4px; display:flex; align-items:center; gap:4px; }
+.trend   { font-weight:700; font-size:0.8rem; }

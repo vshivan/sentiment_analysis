@@ -1,0 +1,53 @@
+.page { padding:2rem 2.25rem 3rem; max-width:1000px; margin:0 auto; }
+.header { margin-bottom:1.75rem; }
+.eyebrow { font-size:0.65rem; font-weight:700; color:var(--cyan); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+.title   { font-size:1.5rem; font-weight:800; color:var(--text-1); letter-spacing:-0.03em; display:flex; align-items:center; }
+.subtitle{ font-size:0.82rem; color:var(--text-4); margin-top:5px; }
+
+.searchCard {
+  background:var(--glass-1); backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--gb-1); border-radius:var(--r-xl);
+  padding:1.5rem; box-shadow:var(--shadow-card); margin-bottom:1.5rem;
+  position:relative; overflow:hidden;
+}
+.searchCard::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,212,255,0.2),transparent); }
+.searchRow { display:flex; gap:10px; }
+.searchBox { flex:1; position:relative; display:flex; align-items:center; background:rgba(255,255,255,0.03); border:1px solid var(--gb-1); border-radius:var(--r-sm); transition:border-color var(--t-fast); }
+.searchBox:focus-within { border-color:var(--cyan-border); box-shadow:0 0 0 3px rgba(0,212,255,0.08); }
+.searchIcon { position:absolute; left:12px; color:var(--text-4); pointer-events:none; }
+.searchInput { flex:1; background:none; border:none; outline:none; color:var(--text-1); font-size:0.9rem; padding:12px 14px 12px 38px; }
+.searchInput::placeholder { color:var(--text-5); }
+.spin { width:13px; height:13px; border:2px solid rgba(0,0,0,0.2); border-top-color:var(--bg-deep); border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; margin-right:4px; }
+
+.results { }
+.resultsHeader { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+.resultCount { font-size:0.82rem; color:var(--text-3); }
+.resultCount strong { color:var(--text-1); }
+
+.resultsList { display:flex; flex-direction:column; gap:8px; }
+.resultCard {
+  background:var(--glass-1); backdrop-filter:blur(20px); border:1px solid var(--gb-1);
+  border-radius:var(--r-lg); padding:1rem 1.25rem;
+  transition:border-color var(--t-fast), background var(--t-fast);
+  animation:fadeIn 0.25s ease both;
+}
+.resultCard:hover { border-color:var(--gb-2); background:var(--glass-2); }
+.resultTop { display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+.productLink {
+  display:inline-flex; align-items:center; gap:4px;
+  background:var(--cyan-glass); border:1px solid var(--cyan-border);
+  color:var(--cyan); border-radius:var(--r-xs); padding:2px 8px;
+  font-size:0.72rem; font-weight:700; cursor:pointer;
+  transition:background var(--t-fast);
+}
+.productLink:hover { background:rgba(0,212,255,0.18); }
+.score { font-size:0.72rem; font-weight:700; }
+.date  { font-size:0.68rem; color:var(--text-5); margin-left:auto; }
+.resultText { font-size:0.875rem; color:var(--text-3); line-height:1.65; margin-bottom:8px; }
+.resultMeta { display:flex; gap:5px; flex-wrap:wrap; }
+.metaTag { background:var(--glass-2); border:1px solid var(--gb-1); color:var(--text-4); border-radius:var(--r-xs); padding:2px 7px; font-size:0.67rem; }
+
+.empty { display:flex; flex-direction:column; align-items:center; gap:12px; padding:4rem; text-align:center; color:var(--text-4); font-size:0.875rem; }
+
+.pagination { display:flex; align-items:center; justify-content:center; gap:12px; margin-top:1.5rem; }
+.pageInfo { font-size:0.78rem; color:var(--text-4); }
