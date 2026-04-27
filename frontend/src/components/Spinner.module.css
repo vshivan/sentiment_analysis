@@ -4,17 +4,31 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-  padding: 4rem;
+  padding: 4rem 2rem;
+}
+.track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .ring {
-  border: 2px solid rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.05);
   border-top-color: var(--accent);
+  border-right-color: var(--accent);
   border-radius: 50%;
-  animation: spin 0.75s linear infinite;
-  box-shadow: 0 0 12px rgba(124,111,247,0.3);
+  animation: spin 0.85s linear infinite;
+  box-shadow: 0 0 16px rgba(123,110,246,0.3);
+}
+.core {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(123,110,246,0.25), transparent);
+  animation: pulse 1.5s ease-in-out infinite;
 }
 .label {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  letter-spacing: 0.03em;
+  font-size: 0.8rem;
+  color: var(--text-4);
+  letter-spacing: 0.02em;
+  font-weight: 500;
 }

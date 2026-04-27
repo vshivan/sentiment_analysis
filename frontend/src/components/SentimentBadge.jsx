@@ -1,22 +1,18 @@
 import React from "react";
 import styles from "./SentimentBadge.module.css";
 
-/**
- * Color-coded sentiment pill.
- * sentiment: "Positive" | "Negative" | "Neutral"
- */
-export default function SentimentBadge({ sentiment }) {
-  const cls = {
-    Positive: styles.positive,
-    Negative: styles.negative,
-    Neutral:  styles.neutral,
-  }[sentiment] || styles.neutral;
+const CONFIG = {
+  Positive: { label: "Positive", dot: "var(--positive)", cls: "positive" },
+  Negative: { label: "Negative", dot: "var(--negative)", cls: "negative" },
+  Neutral:  { label: "Neutral",  dot: "var(--neutral)",  cls: "neutral"  },
+};
 
-  const emoji = { Positive: "↑", Negative: "↓", Neutral: "→" }[sentiment] || "→";
-
+export default function SentimentBadge({ sentiment, size = "md" }) {
+  const cfg = CONFIG[sentiment] || CONFIG.Neutral;
   return (
-    <span className={`${styles.badge} ${cls}`}>
-      {emoji} {sentiment}
+    <span className={`${styles.badge} ${styles[cfg.cls]} ${styles[size]}`}>
+      <span className={styles.dot} style={{ background: cfg.dot }} />
+      {cfg.label}
     </span>
   );
 }
