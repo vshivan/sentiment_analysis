@@ -1,0 +1,27 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: var(--radius-xs);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+.positive {
+  background: var(--positive-glass);
+  color: var(--positive);
+  border: 1px solid var(--positive-border);
+}
+.negative {
+  background: var(--negative-glass);
+  color: var(--negative);
+  border: 1px solid var(--negative-border);
+}
+.neutral {
+  background: var(--neutral-glass);
+  color: var(--neutral);
+  border: 1px solid var(--neutral-border);
+}

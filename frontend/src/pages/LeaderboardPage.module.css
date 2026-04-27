@@ -1,0 +1,119 @@
+/* ══ Leaderboard ══ */
+.page { padding: 2rem 2.25rem; max-width: 1300px; margin: 0 auto; }
+
+.header { margin-bottom: 2rem; }
+.eyebrow {
+  font-size: 0.68rem; font-weight: 700; color: var(--accent-light);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;
+}
+.title {
+  font-size: 1.6rem; font-weight: 800; color: var(--text-primary);
+  letter-spacing: -0.03em; display: flex; align-items: center;
+}
+.subtitle { font-size: 0.82rem; color: var(--text-muted); margin-top: 5px; }
+
+/* Podium */
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 700px) { .podium { grid-template-columns: 1fr; } }
+
+.podiumCard {
+  border: 1px solid;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: var(--shadow-glass);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.podiumCard::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+}
+.podiumCard:hover { transform: translateY(-4px); box-shadow: var(--shadow-glass), var(--shadow-glow); }
+.podiumFirst { transform: scale(1.03); }
+.podiumFirst:hover { transform: scale(1.03) translateY(-4px); }
+
+.podiumRankLabel { font-size: 1.8rem; display: block; margin-bottom: 0.5rem; }
+.podiumEmoji     { font-size: 2.2rem; display: block; margin-bottom: 0.5rem; }
+.podiumName      { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
+.podiumScore     { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
+.podiumSub       { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; }
+.podiumBar {
+  display: flex; height: 5px; border-radius: 99px; overflow: hidden;
+  background: rgba(255,255,255,0.05); gap: 1px;
+}
+.podiumBar > div { height: 100%; }
+
+/* Table card */
+.tableCard {
+  background: var(--glass-1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-glass);
+  position: relative; overflow: hidden;
+}
+.tableCard::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+}
+.tableHeader {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem;
+}
+.tableTitle {
+  font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.tableSub {
+  font-size: 0.68rem; color: var(--text-faint); background: var(--glass-2);
+  border: 1px solid var(--glass-border); padding: 2px 8px; border-radius: 99px;
+}
+
+.tableWrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.835rem; }
+.table th {
+  text-align: left; padding: 8px 12px;
+  font-size: 0.65rem; font-weight: 700; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--glass-border); white-space: nowrap;
+}
+.table td {
+  padding: 11px 12px; color: var(--text-secondary);
+  border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle;
+}
+.table tr:last-child td { border-bottom: none; }
+.tableRow { cursor: pointer; transition: background 0.12s; }
+.tableRow:hover td { background: var(--glass-1); }
+
+.rankBadge { font-size: 0.9rem; font-weight: 700; }
+.productCell { display: flex; align-items: center; gap: 8px; }
+.productCellName { font-weight: 600; color: var(--text-primary); }
+.numCell { color: var(--text-muted); }
+.posCell { color: var(--positive); font-weight: 600; }
+.negCell { color: var(--negative); font-weight: 600; }
+.neuCell { color: var(--neutral);  font-weight: 600; }
+.pct     { font-size: 0.7rem; opacity: 0.6; font-weight: 400; }
+.scoreCell { display: flex; align-items: center; font-weight: 700; }
+
+.miniBar {
+  display: flex; height: 5px; border-radius: 99px; overflow: hidden;
+  background: rgba(255,255,255,0.05); width: 90px; gap: 1px;
+}
+.miniBar > div { height: 100%; }
+
+.reviewCell { max-width: 220px; }
+.reviewSnippet {
+  font-size: 0.75rem; color: var(--text-muted); font-style: italic;
+  display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}

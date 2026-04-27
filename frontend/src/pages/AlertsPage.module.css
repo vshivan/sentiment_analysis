@@ -1,0 +1,109 @@
+/* ══ Alerts Page ══ */
+.page { padding: 2rem 2.25rem; max-width: 1000px; margin: 0 auto; }
+
+.header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: 1.25rem; margin-bottom: 1.75rem;
+}
+.eyebrow {
+  font-size: 0.68rem; font-weight: 700; color: var(--negative);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;
+  opacity: 0.8;
+}
+.title {
+  font-size: 1.5rem; font-weight: 800; color: var(--text-primary);
+  letter-spacing: -0.03em; display: flex; align-items: center;
+}
+.subtitle { font-size: 0.82rem; color: var(--text-muted); margin-top: 5px; }
+
+/* Threshold control */
+.thresholdBox {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: var(--glass-1); backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border); border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+}
+.thresholdLabel { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+.thresholdBtns  { display: flex; gap: 4px; }
+.thresholdBtn {
+  background: none; border: 1px solid var(--glass-border);
+  color: var(--text-muted); border-radius: var(--radius-xs);
+  padding: 4px 10px; font-size: 0.73rem; font-weight: 600; cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.thresholdBtn:hover { background: var(--glass-2); color: var(--text-secondary); }
+.thresholdActive {
+  background: var(--negative-glass); color: var(--negative);
+  border-color: var(--negative-border);
+}
+
+/* Summary strip */
+.summaryStrip {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0.875rem; margin-bottom: 1.75rem;
+}
+@media (max-width: 600px) { .summaryStrip { grid-template-columns: repeat(2, 1fr); } }
+
+.summaryItem {
+  background: var(--glass-1); backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); border-radius: var(--radius);
+  padding: 1rem 1.25rem; text-align: center; box-shadow: var(--shadow-glass);
+}
+.summaryNum   { display: block; font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; }
+.summaryLabel { display: block; font-size: 0.68rem; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.07em; }
+
+/* All clear */
+.allClear {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 4rem; text-align: center;
+  background: var(--glass-1); backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+}
+.allClearTitle { font-size: 1.2rem; font-weight: 700; color: var(--positive); }
+.allClearSub   { font-size: 0.85rem; color: var(--text-muted); }
+
+/* Alerts list */
+.alertsList { display: flex; flex-direction: column; gap: 0.875rem; }
+
+.alertCard {
+  display: flex; align-items: center; gap: 1.25rem;
+  background: var(--glass-1); backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem; cursor: pointer; box-shadow: var(--shadow-glass);
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  position: relative; overflow: hidden;
+}
+.alertCard::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+}
+.alertCard:hover { background: var(--glass-2); transform: translateX(4px); }
+
+.alertHigh   { border-left: 3px solid var(--negative); }
+.alertMedium { border-left: 3px solid var(--neutral); }
+
+.alertIcon { flex-shrink: 0; }
+
+.alertBody { flex: 1; min-width: 0; }
+.alertTop  { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+.alertEmoji   { font-size: 1.2rem; }
+.alertProduct { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+
+.severityBadge {
+  font-size: 0.68rem; font-weight: 700; padding: 2px 8px;
+  border-radius: var(--radius-xs); backdrop-filter: blur(8px);
+}
+.sevHigh   { background: var(--negative-glass); color: var(--negative); border: 1px solid var(--negative-border); }
+.sevMedium { background: var(--neutral-glass);  color: var(--neutral);  border: 1px solid var(--neutral-border); }
+
+.alertDesc { font-size: 0.83rem; color: var(--text-secondary); margin-bottom: 10px; }
+
+.alertBar {
+  height: 5px; border-radius: 99px; overflow: hidden;
+  background: rgba(255,255,255,0.05);
+}
+.alertBarFill { height: 100%; border-radius: 99px; transition: width 0.6s ease; opacity: 0.75; }
+
+.alertArrow { font-size: 1rem; color: var(--text-faint); flex-shrink: 0; }

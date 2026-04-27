@@ -1,0 +1,123 @@
+/* ══════════════════════════════════════════════
+   Senti — Glassmorphism Design System
+   ══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* ── Base backgrounds ── */
+  --bg-base:        #0d0f1a;
+  --bg-deep:        #080a12;
+
+  /* ── Glass layers ── */
+  --glass-1:        rgba(255,255,255,0.04);
+  --glass-2:        rgba(255,255,255,0.07);
+  --glass-3:        rgba(255,255,255,0.10);
+  --glass-hover:    rgba(255,255,255,0.13);
+  --glass-active:   rgba(255,255,255,0.16);
+
+  /* ── Glass borders ── */
+  --glass-border:   rgba(255,255,255,0.08);
+  --glass-border-2: rgba(255,255,255,0.12);
+  --glass-border-3: rgba(255,255,255,0.18);
+
+  /* ── Accent — violet-indigo ── */
+  --accent:         #7c6ff7;
+  --accent-light:   #a89cf8;
+  --accent-dim:     #5548c8;
+  --accent-glow:    rgba(124,111,247,0.20);
+  --accent-glass:   rgba(124,111,247,0.10);
+
+  /* ── Sentiment — muted, glassy ── */
+  --positive:       #4ade80;
+  --positive-dim:   #22c55e;
+  --positive-glass: rgba(74,222,128,0.10);
+  --positive-border:rgba(74,222,128,0.20);
+
+  --negative:       #f87171;
+  --negative-dim:   #ef4444;
+  --negative-glass: rgba(248,113,113,0.10);
+  --negative-border:rgba(248,113,113,0.20);
+
+  --neutral:        #fbbf24;
+  --neutral-dim:    #f59e0b;
+  --neutral-glass:  rgba(251,191,36,0.10);
+  --neutral-border: rgba(251,191,36,0.20);
+
+  /* ── Typography ── */
+  --text-primary:   #eef0f8;
+  --text-secondary: #9ba3c0;
+  --text-muted:     #5c6480;
+  --text-faint:     #363d58;
+
+  /* ── Mesh gradient orbs (background) ── */
+  --orb-1: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,111,247,0.12) 0%, transparent 70%);
+  --orb-2: radial-gradient(ellipse 50% 60% at 80% 80%, rgba(74,222,128,0.07) 0%, transparent 70%);
+  --orb-3: radial-gradient(ellipse 40% 40% at 60% 10%, rgba(248,113,113,0.06) 0%, transparent 70%);
+
+  /* ── Shape ── */
+  --radius:    12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --radius-lg: 16px;
+
+  /* ── Shadows ── */
+  --shadow-glass: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+  --shadow-sm:    0 2px 8px rgba(0,0,0,0.3);
+  --shadow-lg:    0 16px 48px rgba(0,0,0,0.5);
+  --shadow-glow:  0 0 24px rgba(124,111,247,0.15);
+}
+
+html { font-size: 16px; }
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  /* Mesh gradient background */
+  background-image: var(--orb-1), var(--orb-2), var(--orb-3);
+  background-attachment: fixed;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(124,111,247,0.4); }
+
+/* ── Glass card mixin (reusable via class) ── */
+.glass {
+  background: var(--glass-1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+.glass-2 {
+  background: var(--glass-2);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+
+/* ── Animations ── */
+@keyframes fadeIn    { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeInUp  { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes spin      { to { transform: rotate(360deg); } }
+@keyframes pulse     { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
+@keyframes glow      { 0%,100% { box-shadow: 0 0 8px rgba(124,111,247,0.3); } 50% { box-shadow: 0 0 20px rgba(124,111,247,0.6); } }
+@keyframes slideIn   { from { opacity:0; transform:translateX(-12px); } to { opacity:1; transform:translateX(0); } }
+@keyframes shimmer   {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.fade-in     { animation: fadeIn 0.3s ease both; }
+.fade-in-up  { animation: fadeInUp 0.4s ease both; }
+.slide-in    { animation: slideIn 0.3s ease both; }
+
+/* ── Utility ── */
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

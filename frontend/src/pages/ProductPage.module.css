@@ -1,0 +1,174 @@
+/* ══ Product Page ══ */
+.page { padding: 2rem 2.25rem; max-width: 1200px; margin: 0 auto; }
+
+.header { margin-bottom: 1.625rem; }
+.backBtn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--glass-1); border: 1px solid var(--glass-border);
+  color: var(--text-muted); border-radius: var(--radius-xs);
+  padding: 5px 12px; font-size: 0.78rem; cursor: pointer;
+  margin-bottom: 1.125rem; backdrop-filter: blur(8px);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.backBtn:hover { border-color: var(--glass-border-2); color: var(--text-secondary); background: var(--glass-2); }
+
+.titleRow { display: flex; align-items: center; gap: 12px; }
+.emoji    { font-size: 2rem; filter: drop-shadow(0 0 8px rgba(255,255,255,0.2)); }
+.title    { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
+.subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+/* Stats row */
+.statsRow { display: flex; gap: 0.875rem; margin-bottom: 1.625rem; flex-wrap: wrap; }
+.statPill {
+  flex: 1; min-width: 130px;
+  background: var(--glass-1); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); border-radius: var(--radius);
+  padding: 0.875rem 1.125rem; display: flex; align-items: center; gap: 10px;
+  border-left-width: 2px; box-shadow: var(--shadow-glass);
+}
+.statCount { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; }
+.statLabel { flex: 1; font-size: 0.76rem; color: var(--text-muted); font-weight: 500; }
+.statPct   { font-size: 0.78rem; font-weight: 700; opacity: 0.8; }
+
+/* Charts */
+.chartsRow {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 0.875rem; margin-bottom: 1.75rem;
+}
+.chartCard {
+  background: var(--glass-1); backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+  padding: 1.375rem 1.5rem; box-shadow: var(--shadow-glass);
+  position: relative; overflow: hidden;
+}
+.chartCard::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+}
+.cardTitle {
+  font-size: 0.68rem; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.875rem;
+}
+
+/* Reviews section */
+.reviewsSection {
+  background: var(--glass-1); backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+  padding: 1.375rem 1.5rem; box-shadow: var(--shadow-glass);
+}
+.reviewsHeader {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.875rem; margin-bottom: 1.125rem;
+}
+.reviewsHeaderLeft { display: flex; align-items: center; gap: 10px; }
+.reviewCount {
+  background: var(--glass-2); color: var(--text-muted);
+  font-size: 0.68rem; font-weight: 700; padding: 2px 8px;
+  border-radius: 99px; border: 1px solid var(--glass-border);
+}
+.controls { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+
+/* Search */
+.searchBox { position: relative; display: flex; align-items: center; }
+.searchIcon { position: absolute; left: 9px; color: var(--text-faint); pointer-events: none; }
+.searchInput {
+  background: var(--glass-1); backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-xs);
+  color: var(--text-primary); font-size: 0.78rem;
+  padding: 6px 26px 6px 28px; outline: none; width: 180px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.searchInput:focus { border-color: var(--glass-border-2); background: var(--glass-2); }
+.searchInput::placeholder { color: var(--text-faint); }
+.clearSearch {
+  position: absolute; right: 7px; background: none; border: none;
+  color: var(--text-faint); cursor: pointer; padding: 2px;
+  display: flex; align-items: center; transition: color 0.15s;
+}
+.clearSearch:hover { color: var(--text-secondary); }
+
+/* Filter toggle */
+.filterToggle {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--glass-1); border: 1px solid var(--glass-border);
+  color: var(--text-muted); border-radius: var(--radius-xs);
+  padding: 6px 11px; font-size: 0.76rem; font-weight: 500; cursor: pointer;
+  backdrop-filter: blur(8px); transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.filterToggle:hover { border-color: var(--glass-border-2); color: var(--text-secondary); background: var(--glass-2); }
+.filterToggleActive { border-color: rgba(124,111,247,0.35); color: var(--accent-light); background: var(--accent-glass); }
+.filterBadge {
+  background: var(--accent); color: #fff;
+  font-size: 0.62rem; font-weight: 800; padding: 1px 5px; border-radius: 99px;
+}
+
+/* Export group */
+.exportGroup {
+  display: flex; align-items: center; gap: 3px;
+  background: var(--glass-1); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xs); padding: 2px 4px; backdrop-filter: blur(8px);
+}
+.exportLabel {
+  font-size: 0.65rem; color: var(--text-faint); font-weight: 700;
+  padding: 0 6px; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.exportBtn {
+  background: none; border: none; color: var(--text-muted);
+  font-size: 0.73rem; font-weight: 700; padding: 4px 8px;
+  border-radius: 4px; cursor: pointer; text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+}
+.exportBtn:hover { background: var(--glass-2); color: var(--text-primary); }
+
+/* Filter panel */
+.filterPanel {
+  background: var(--glass-1); backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+  padding: 1rem 1.125rem; margin-bottom: 1rem;
+  display: flex; flex-direction: column; gap: 0.875rem;
+}
+.filterGroup { display: flex; flex-direction: column; gap: 6px; }
+.filterGroupLabel {
+  font-size: 0.65rem; font-weight: 700; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.filterTabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.filterTab {
+  background: var(--glass-1); border: 1px solid var(--glass-border);
+  color: var(--text-muted); font-size: 0.73rem; font-weight: 500;
+  padding: 5px 11px; border-radius: var(--radius-xs); cursor: pointer;
+  backdrop-filter: blur(8px); transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.filterTab:hover { color: var(--text-secondary); border-color: var(--glass-border-2); background: var(--glass-2); }
+.activeTab { background: var(--glass-2); color: var(--text-primary); border-color: var(--glass-border-2); }
+.clearBtn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 1px solid var(--glass-border);
+  color: var(--text-muted); border-radius: var(--radius-xs);
+  padding: 5px 10px; font-size: 0.73rem; cursor: pointer; align-self: flex-start;
+  transition: border-color 0.15s, color 0.15s;
+}
+.clearBtn:hover { border-color: var(--glass-border-2); color: var(--text-secondary); }
+
+/* Review cards */
+.reviewsList { display: flex; flex-direction: column; gap: 8px; }
+.reviewCard {
+  background: var(--glass-1); backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+  padding: 0.875rem 1.125rem; transition: border-color 0.15s, background 0.15s;
+}
+.reviewCard:hover { border-color: var(--glass-border-2); background: var(--glass-2); }
+.reviewTop { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
+.reviewNum {
+  font-size: 0.65rem; color: var(--text-faint); font-weight: 700;
+  background: var(--glass-2); padding: 2px 7px; border-radius: 99px;
+  border: 1px solid var(--glass-border);
+}
+.scoreChip { font-size: 0.7rem; color: var(--text-muted); margin-left: auto; }
+.reviewText { font-size: 0.855rem; color: var(--text-secondary); line-height: 1.65; }
+
+.empty { text-align: center; color: var(--text-muted); padding: 2.5rem; font-size: 0.85rem; opacity: 0.6; }
+.error { padding: 3rem; text-align: center; color: var(--negative); }
