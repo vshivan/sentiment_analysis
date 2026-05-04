@@ -14,6 +14,7 @@ import ImportPage    from "./pages/ImportPage";
 import ScrapePage    from "./pages/ScrapePage";
 import AuditPage     from "./pages/AuditPage";
 import SearchPage    from "./pages/SearchPage";
+import CameraPage    from "./pages/CameraPage";
 import Spinner       from "./components/Spinner";
 
 function ProtectedRoute({ children }) {
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="search"      element={<SearchPage />} />
         <Route path="audit"       element={<AuditPage />} />
         <Route path="admin"       element={<AdminPanel />} />
+        <Route path="camera"      element={<CameraPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

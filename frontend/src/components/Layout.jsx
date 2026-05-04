@@ -1,10 +1,10 @@
-﻿import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Settings, Zap, ChevronRight,
   PanelLeftClose, PanelLeftOpen, TrendingUp,
   GitCompareArrows, Trophy, Bell, Upload, Globe,
-  Search, LogOut, Shield, User, FileText
+  Search, LogOut, Shield, User, FileText, Camera
 } from "lucide-react";
 import { fetchProducts, fetchNotifications, markAllRead } from "../api";
 import { useAuth } from "../context/AuthContext";
@@ -18,8 +18,31 @@ const PRODUCT_ICONS = {
 const PAGE_TITLES = {
   "/dashboard":"Dashboard","/leaderboard":"Leaderboard","/alerts":"Alerts",
   "/analyze":"Analyze Text","/scrape":"URL Scraper","/compare":"Compare",
-  "/import":"Bulk Import","/admin":"Admin Panel","/audit":"Audit Log","/search":"Global Search"
+  "/import":"Bulk Import","/admin":"Admin Panel","/audit":"Audit Log",
+  "/search":"Global Search","/camera":"Live Camera"
 };
+
+// Inline SVG logo component for Sentilytics
+const SentilyticsLogo = ({ size = 28 }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="slogo" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#0099cc"/>
+        <stop offset="50%" stopColor="#00d4ff"/>
+        <stop offset="100%" stopColor="#00e5ff"/>
+      </linearGradient>
+    </defs>
+    <circle cx="32" cy="32" r="30" fill="url(#slogo)" opacity="0.15"/>
+    <path d="M10 32 L18 32 L22 18 L26 44 L30 24 L34 38 L38 20 L42 40 L46 28 L50 32 L54 32" 
+          stroke="url(#slogo)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    <circle cx="22" cy="18" r="2.5" fill="#00d4ff"/>
+    <circle cx="30" cy="24" r="2.5" fill="#00d4ff"/>
+    <circle cx="38" cy="20" r="2.5" fill="#00d4ff"/>
+    <circle cx="26" cy="44" r="2" fill="#00e676" opacity="0.8"/>
+    <circle cx="34" cy="38" r="2" fill="#ffca28" opacity="0.8"/>
+    <circle cx="42" cy="40" r="2" fill="#ff5252" opacity="0.8"/>
+  </svg>
+);
 
 const NAV_MAIN  = [
   { to:"/dashboard",   icon:<LayoutDashboard size={16}/>, label:"Dashboard"   },
@@ -28,6 +51,7 @@ const NAV_MAIN  = [
 ];
 const NAV_TOOLS = [
   { to:"/analyze", icon:<Zap              size={16}/>, label:"Analyze Text" },
+  { to:"/camera",  icon:<Camera           size={16}/>, label:"Live Camera"  },
   { to:"/scrape",  icon:<Globe            size={16}/>, label:"URL Scraper"  },
   { to:"/compare", icon:<GitCompareArrows size={16}/>, label:"Compare"      },
   { to:"/import",  icon:<Upload           size={16}/>, label:"Bulk Import"  },
@@ -66,7 +90,7 @@ export default function Layout() {
 
   const pageTitle = PAGE_TITLES[location.pathname] ||
     (location.pathname.startsWith("/product/")
-      ? decodeURIComponent(location.pathname.split("/product/")[1]) : "Senti");
+      ? decodeURIComponent(location.pathname.split("/product/")[1]) : "Sentilytics");
 
   const handleMarkAllRead = async () => {
     await markAllRead();
@@ -90,8 +114,8 @@ export default function Layout() {
 
       <aside className={`${styles.sidebar} ${open?styles.sidebarOpen:styles.sidebarCollapsed} ${mobileOpen?styles.sidebarMobileOpen:""}`}>
         <div className={styles.logo}>
-          <div className={styles.logoMark}>✦</div>
-          {open && <div className={styles.logoText}><span className={styles.logoName}>Senti</span><span className={styles.logoTag}>ERP</span></div>}
+          <div className={styles.logoMark}><SentilyticsLogo size={28} /></div>
+          {open && <div className={styles.logoText}><span className={styles.logoName}>Sentilytics</span><span className={styles.logoTag}>AI Analytics</span></div>}
         </div>
         <button className={styles.toggleBtn} onClick={()=>setOpen(v=>!v)} aria-label="Toggle sidebar">
           {open ? <PanelLeftClose size={14}/> : <PanelLeftOpen size={14}/>}
@@ -120,7 +144,7 @@ export default function Layout() {
         {open && (
           <div className={styles.sidebarFooter}>
             <div className={styles.footerDot}/>
-            <span>v2.0 ERP</span>
+            <span>Sentilytics v2.0</span>
             <span className={styles.footerSep}>·</span>
             <span>{products.length} products</span>
           </div>
@@ -133,7 +157,7 @@ export default function Layout() {
             <span/><span/><span/>
           </button>
           <div className={styles.breadcrumb}>
-            <span className={styles.breadcrumbRoot}>Senti</span>
+            <span className={styles.breadcrumbRoot}>Sentilytics</span>
             <ChevronRight size={12} className={styles.breadcrumbSep}/>
             <span className={styles.breadcrumbCurrent}>{pageTitle}</span>
           </div>

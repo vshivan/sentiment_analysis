@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { analyzeText } from "../api";
+import React, { useRef, useState } from "react";
+import { analyzeText, analyzeImage } from "../api";
 import SentimentBadge from "../components/SentimentBadge";
-import { Zap, RotateCcw } from "lucide-react";
+import { Zap, RotateCcw, Upload, Info, ChevronDown, ChevronUp, ThumbsUp, ThumbsDown, Lightbulb, ArrowRight } from "lucide-react";
 import styles from "./AnalyzePage.module.css";
 
 // Sample prompts to help users try the analyzer
@@ -14,12 +14,20 @@ const SAMPLES = [
   "Achha product hai, mujhe pasand aaya.",
 ];
 
+// Sentiment emoji map
+const SENTIMENT_EMOJI = { Positive: "😊", Negative: "😞", Neutral: "😐" };
+
 export default function AnalyzePage() {
-  const [text,      setText]      = useState("");
-  const [result,    setResult]    = useState(null);
-  const [loading,   setLoading]   = useState(false);
-  const [error,     setError]     = useState(null);
-  const [history,   setHistory]   = useState([]);
+  const [text,         setText]         = useState("");
+  const [result,       setResult]       = useState(null);
+  const [imageFile,    setImageFile]    = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageResult,  setImageResult]  = useState(null);
+  const [loading,      setLoading]      = useState(false);
+  const [error,        setError]        = useState(null);
+  const [history,      setHistory]      = useState([]);
+  const [showFactors,  setShowFactors]  = useState(true);
+  const fileRef = useRef();
 
   const handleAnalyze = async () => {
     if (!text.trim()) return;
@@ -27,8 +35,10 @@ export default function AnalyzePage() {
     setError(null);
     try {
       const res = await analyzeText(text.trim());
-      const data = res.data;
+      const data = { ...res.data, analysis_type: "text" };
       setResult(data);
+      setImageResult(null);
+      setShowFactors(true);
       // Prepend to history (keep last 10)
       setHistory(prev => [data, ...prev].slice(0, 10));
     } catch {
@@ -42,6 +52,43 @@ export default function AnalyzePage() {
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleAnalyze();
   };
 
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose a valid image file.");
+      return;
+    }
+    setError(null);
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+    setImageResult(null);
+    setResult(null);
+  };
+
+  const handleAnalyzeImage = async () => {
+    if (!imageFile) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await analyzeImage(imageFile);
+      const data = { ...res.data, analysis_type: "image", imageUrl: imagePreview };
+      setImageResult(data);
+      setResult(null);
+      setHistory(prev => [data, ...prev].slice(0, 10));
+    } catch {
+      setError("Image analysis failed. Is the backend running?");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setImageResult(null);
+  };
+
   const handleSample = (s) => {
     setText(s);
     setResult(null);
@@ -50,26 +97,33 @@ export default function AnalyzePage() {
   const handleReset = () => {
     setText("");
     setResult(null);
+    setImageFile(null);
+    setImagePreview(null);
+    setImageResult(null);
     setError(null);
   };
 
+  const activeResult = imageResult || result;
+
   // Score bar width (0–100%)
-  const scoreBarWidth = result
-    ? `${Math.round(((result.score + 1) / 2) * 100)}%`
+  const scoreBarWidth = activeResult
+    ? `${Math.round(((activeResult.score + 1) / 2) * 100)}%`
     : "50%";
 
-  const scoreColor = result
-    ? result.score > 0.05 ? "var(--positive)"
-    : result.score < -0.05 ? "var(--negative)"
+  const scoreColor = activeResult
+    ? activeResult.score > 0.05 ? "var(--positive)"
+    : activeResult.score < -0.05 ? "var(--negative)"
     : "var(--neutral)"
     : "var(--accent)";
+
+  const explanation = activeResult?.explanation;
 
   return (
     <div className={`${styles.page} fade-in`}>
       {/* Header */}
       <div className={styles.header}>
         <h1 className={styles.title}><Zap size={22} style={{ verticalAlign: "middle", marginRight: 8 }} />Analyze Text</h1>
-        <p className={styles.subtitle}>Paste any review or text to instantly detect its sentiment</p>
+        <p className={styles.subtitle}>Paste any review or text to instantly detect its sentiment — with AI-powered explanations</p>
       </div>
 
       <div className={styles.body}>
@@ -105,6 +159,47 @@ export default function AnalyzePage() {
             </button>
           </div>
 
+          <div className={styles.imageUploadPanel}>
+            <div className={styles.imageUploadRow}>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                style={{ display: "none" }}
+              />
+              <button
+                type="button"
+                className={styles.uploadBtn}
+                onClick={() => fileRef.current.click()}
+              >
+                <Upload size={14} /> Upload Image
+              </button>
+              <span className={styles.imageFileName}>
+                {imageFile ? imageFile.name : "No file selected"}
+              </span>
+            </div>
+            {imagePreview && (
+              <div className={styles.imagePreview}>
+                <img src={imagePreview} alt="Selected preview" className={styles.imagePreviewImg} />
+                <button className={styles.imageClearBtn} onClick={handleClearImage}>
+                  Remove
+                </button>
+              </div>
+            )}
+            <button
+              className={styles.analyzeBtn}
+              onClick={handleAnalyzeImage}
+              disabled={loading || !imageFile}
+              aria-label="Analyze image sentiment"
+            >
+              {loading && imageFile
+                ? <><span className={styles.btnSpinner} /> Analyzing…</>
+                : <><Upload size={15} /> Analyze Image</>
+              }
+            </button>
+          </div>
+
           {/* Sample prompts */}
           <div className={styles.samples}>
             <p className={styles.samplesLabel}>Try a sample:</p>
@@ -122,20 +217,28 @@ export default function AnalyzePage() {
         <div className={styles.resultPanel}>
           {error && <div className={styles.errorBox}>{error}</div>}
 
-          {!result && !error && (
+          {!activeResult && !error && (
             <div className={styles.placeholder}>
               <span style={{ fontSize: "3.5rem" }}>🔍</span>
               <p>Your sentiment result will appear here</p>
-              <p className={styles.hint}>Supports English + Hindi/Hinglish</p>
+              <p className={styles.hint}>Supports English + Hindi/Hinglish for text and visual image mood analysis</p>
             </div>
           )}
 
-          {result && (
+          {activeResult && (
             <div className={`${styles.resultCard} fade-in`}>
               <div className={styles.resultTop}>
-                <SentimentBadge sentiment={result.sentiment} />
-                <span className={styles.scoreLabel}>Polarity Score</span>
+                <SentimentBadge sentiment={activeResult.sentiment} />
+                <span className={styles.scoreLabel}>
+                  {activeResult.analysis_type === "image" ? "Visual Sentiment" : "Polarity Score"}
+                </span>
               </div>
+
+              {activeResult.analysis_type === "image" && activeResult.imageUrl && (
+                <div className={styles.imageResultPreview}>
+                  <img src={activeResult.imageUrl} alt="Analyzed image" />
+                </div>
+              )}
 
               {/* Score gauge */}
               <div className={styles.gauge}>
@@ -154,17 +257,116 @@ export default function AnalyzePage() {
               </div>
 
               <div className={styles.scoreValue} style={{ color: scoreColor }}>
-                {result.score > 0 ? "+" : ""}{result.score}
+                {activeResult.score > 0 ? "+" : ""}{activeResult.score}
               </div>
 
-              <div className={styles.analyzedText}>
-                <p className={styles.analyzedLabel}>Analyzed text:</p>
-                <p className={styles.analyzedContent}>"{result.text}"</p>
-              </div>
+              {activeResult.analysis_type === "text" && (
+                <div className={styles.analyzedText}>
+                  <p className={styles.analyzedLabel}>Analyzed text:</p>
+                  <p className={styles.analyzedContent}>"{activeResult.text}"</p>
+                </div>
+              )}
+              {activeResult.analysis_type === "image" && (
+                <div className={styles.analyzedText}>
+                  <p className={styles.analyzedLabel}>Analyzed image file:</p>
+                  <p className={styles.analyzedContent}>{activeResult.filename}</p>
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
+
+      {/* ── Explanation Section ── */}
+      {activeResult && explanation && (
+        <div className={`${styles.explanationSection} fade-in-up`}>
+          {/* Summary banner */}
+          <div className={styles.explSummaryBanner} data-sentiment={activeResult.sentiment.toLowerCase()}>
+            <span className={styles.explEmoji}>{SENTIMENT_EMOJI[activeResult.sentiment] || "🔍"}</span>
+            <div className={styles.explSummaryText}>
+              <div className={styles.explSummaryRow}>
+                <Lightbulb size={15} />
+                <span className={styles.explSummaryLabel}>Why this result?</span>
+              </div>
+              <p className={styles.explSummaryDesc}>{explanation.summary}</p>
+            </div>
+          </div>
+
+          {/* Keywords detected */}
+          {(explanation.positive_words?.length > 0 || explanation.negative_words?.length > 0) && (
+            <div className={styles.explKeywords}>
+              {explanation.positive_words?.length > 0 && (
+                <div className={styles.explKeywordGroup}>
+                  <span className={styles.explKeywordLabel}><ThumbsUp size={13} /> Positive signals</span>
+                  <div className={styles.explChips}>
+                    {explanation.positive_words.map((w, i) => (
+                      <span key={i} className={`${styles.explChip} ${styles.explChipPos}`}>{w}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {explanation.negative_words?.length > 0 && (
+                <div className={styles.explKeywordGroup}>
+                  <span className={styles.explKeywordLabel}><ThumbsDown size={13} /> Negative signals</span>
+                  <div className={styles.explChips}>
+                    {explanation.negative_words.map((w, i) => (
+                      <span key={i} className={`${styles.explChip} ${styles.explChipNeg}`}>{w}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Polarity breakdown mini-bar */}
+          <div className={styles.explBreakdown}>
+            <div className={styles.explBreakdownRow}>
+              <span className={styles.explBreakdownLabel}>English Base Polarity</span>
+              <span className={styles.explBreakdownVal} style={{
+                color: explanation.base_polarity > 0 ? "var(--positive)" : explanation.base_polarity < 0 ? "var(--negative)" : "var(--neutral)"
+              }}>{explanation.base_polarity > 0 ? "+" : ""}{explanation.base_polarity}</span>
+            </div>
+            {explanation.keyword_boost !== 0 && (
+              <div className={styles.explBreakdownRow}>
+                <span className={styles.explBreakdownLabel}>Hindi Keyword Boost</span>
+                <span className={styles.explBreakdownVal} style={{
+                  color: explanation.keyword_boost > 0 ? "var(--positive)" : "var(--negative)"
+                }}>{explanation.keyword_boost > 0 ? "+" : ""}{explanation.keyword_boost}</span>
+              </div>
+            )}
+            <div className={`${styles.explBreakdownRow} ${styles.explBreakdownTotal}`}>
+              <span className={styles.explBreakdownLabel}>Final Score</span>
+              <span className={styles.explBreakdownVal} style={{ color: scoreColor, fontWeight: 700 }}>
+                {explanation.final_polarity > 0 ? "+" : ""}{explanation.final_polarity}
+              </span>
+            </div>
+          </div>
+
+          {/* Detailed factors (collapsible) */}
+          {explanation.factors?.length > 0 && (
+            <div className={styles.explFactors}>
+              <button
+                className={styles.explFactorsToggle}
+                onClick={() => setShowFactors(v => !v)}
+              >
+                <Info size={14} />
+                <span>Detailed Analysis Factors ({explanation.factors.length})</span>
+                {showFactors ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
+              {showFactors && (
+                <ul className={styles.explFactorList}>
+                  {explanation.factors.map((f, i) => (
+                    <li key={i} className={styles.explFactorItem}>
+                      <ArrowRight size={12} className={styles.explFactorIcon} />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* History */}
       {history.length > 0 && (

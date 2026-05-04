@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════
-   Senti ERP — Design System v4.0
+   Sentilytics — Design System v4.0
    Color: Deep Navy + Electric Cyan + Coral Accent
    ══════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -90,7 +90,7 @@
 html { font-size: 16px; scroll-behavior: smooth; }
 
 body {
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Outfit", "Inter", system-ui, -apple-system, sans-serif;
   background: var(--bg-base);
   background-image: var(--orb-1), var(--orb-2), var(--orb-3), var(--orb-4);
   background-attachment: fixed;

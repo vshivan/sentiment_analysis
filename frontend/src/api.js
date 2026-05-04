@@ -1,11 +1,20 @@
 /**
- * Senti ERP — API Client
+ * Sentilytics — API Client
  * All requests include JWT Bearer token via axios defaults (set in AuthContext)
  */
 import axios from "axios";
 
 const BASE = "/api";
 const client = axios.create({ baseURL: BASE });
+
+// Attach JWT token from localStorage to every request
+client.interceptors.request.use((config) => {
+  const token = localStorage.getItem("senti_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 export const loginAPI    = (u, p)  => client.post("/auth/login", { username: u, password: p });
@@ -33,6 +42,11 @@ export const updateReview = (product, id, data) =>
 export const fetchStats       = ()          => client.get("/stats");
 export const fetchKeywords    = (product)   => client.get(`/keywords/${encodeURIComponent(product)}`);
 export const analyzeText      = (text)      => client.post("/analyze", { text });
+export const analyzeImage     = (imageFile) => {
+  const formData = new FormData();
+  formData.append("image", imageFile);
+  return client.post("/analyze-image", formData);
+};
 export const fetchLeaderboard = ()          => client.get("/leaderboard");
 export const fetchAlerts      = (t = 40)    => client.get(`/alerts?threshold=${t}`);
 export const fetchComparison  = (products)  =>
@@ -56,3 +70,10 @@ export const fetchAuditLogs    = (page = 1)  => client.get(`/audit?page=${page}`
 export const fetchNotifications = ()         => client.get("/notifications");
 export const markNotifRead     = (id)        => client.patch(`/notifications/${id}/read`);
 export const markAllRead       = ()          => client.patch("/notifications/read-all");
+
+// ── Emotion (Camera) ──────────────────────────────────────────────────────────
+export const logEmotion        = (data)      => client.post("/emotion-log", data);
+export const fetchEmotionStats = (sessionId) =>
+  client.get(`/emotion-stats${sessionId ? `?session_id=${sessionId}` : ""}`);
+
+export default client;

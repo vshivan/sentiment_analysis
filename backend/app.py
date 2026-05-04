@@ -1,5 +1,5 @@
-﻿"""
-Senti ERP - Complete Backend API
+"""
+Sentilytics - Complete Backend API
 Sprint 1: Auth + SQLite + Validation + Rate Limiting + Audit Log
 Sprint 2: Pagination + Date stamps + RBAC + Excel export
 """
@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 
-from sentiment import analyze_sentiment, get_sentiment_stats, extract_keywords
+from sentiment import analyze_sentiment, analyze_image_sentiment, get_sentiment_stats, extract_keywords
 from scraper import scrape_reviews
 
 load_dotenv()
@@ -257,13 +257,13 @@ def init_db():
         db.create_all()
         # Seed admin user
         if not User.query.filter_by(username="admin").first():
-            admin = User(username="admin", email="admin@senti.io",
+            admin = User(username="admin", email="admin@sentilytics.io",
                          password=generate_password_hash("admin123"),
                          role="admin")
-            analyst = User(username="analyst", email="analyst@senti.io",
+            analyst = User(username="analyst", email="analyst@sentilytics.io",
                            password=generate_password_hash("analyst123"),
                            role="analyst")
-            viewer = User(username="viewer", email="viewer@senti.io",
+            viewer = User(username="viewer", email="viewer@sentilytics.io",
                           password=generate_password_hash("viewer123"),
                           role="viewer")
             db.session.add_all([admin, analyst, viewer])
@@ -279,7 +279,7 @@ def init_db():
                 db.session.add(p)
                 db.session.flush()
                 for text in reviews:
-                    sentiment, score = analyze_sentiment(text)
+                    sentiment, score, _expl = analyze_sentiment(text)
                     r = Review(product_id=p.id, text=text,
                                sentiment=sentiment, score=round(score, 4),
                                language=detect_language(text),
@@ -445,7 +445,7 @@ def add_review(product_name):
     if len(text) > 2000:
         return jsonify({"error": "Review text too long (max 2000 chars)"}), 400
 
-    sentiment, score = analyze_sentiment(text)
+    sentiment, score, _expl = analyze_sentiment(text)
     identity = get_jwt_identity()
     r = Review(product_id=p.id, text=text, sentiment=sentiment,
                score=round(score, 4), language=detect_language(text),
@@ -485,7 +485,7 @@ def update_review(product_name, rid):
         r.tags = body["tags"]
     if "text" in body:
         r.text = body["text"].strip()
-        r.sentiment, score = analyze_sentiment(r.text)
+        r.sentiment, score, _expl = analyze_sentiment(r.text)
         r.score = round(score, 4)
         r.language = detect_language(r.text)
     db.session.commit()
@@ -556,9 +556,35 @@ def analyze():
     text = body.get("text", "").strip()
     if not text:
         return jsonify({"error": "Missing text"}), 400
-    sentiment, score = analyze_sentiment(text)
+    sentiment, score, explanation = analyze_sentiment(text)
     return jsonify({"text": text, "sentiment": sentiment,
-                    "score": round(score, 4), "language": detect_language(text)})
+                    "score": round(score, 4), "language": detect_language(text),
+                    "analysis_type": "text",
+                    "explanation": explanation})
+
+@app.route("/analyze-image", methods=["POST"])
+@jwt_required()
+def analyze_image():
+    if "image" not in request.files:
+        return jsonify({"error": "Missing image file"}), 400
+
+    image_file = request.files["image"]
+    if image_file.filename == "":
+        return jsonify({"error": "Empty image file"}), 400
+    if not image_file.mimetype.startswith("image/"):
+        return jsonify({"error": "Unsupported file type"}), 400
+
+    try:
+        sentiment, score = analyze_image_sentiment(image_file)
+    except Exception:
+        return jsonify({"error": "Unable to process image file"}), 400
+
+    return jsonify({
+        "sentiment": sentiment,
+        "score": round(score, 4),
+        "analysis_type": "image",
+        "filename": image_file.filename
+    })
 
 @app.route("/leaderboard", methods=["GET"])
 @jwt_required()
@@ -741,7 +767,7 @@ def bulk_import(product_name):
     added = 0
     for text in texts:
         if isinstance(text, str) and text.strip() and len(text.strip()) >= 5:
-            sentiment, score = analyze_sentiment(text.strip())
+            sentiment, score, _expl = analyze_sentiment(text.strip())
             r = Review(product_id=p.id, text=text.strip(),
                        sentiment=sentiment, score=round(score,4),
                        language=detect_language(text),
@@ -768,7 +794,7 @@ def scrape():
                         "reviews": [], "stats": None}), 200
     enriched = []
     for idx, text in enumerate(scraped["reviews"]):
-        sentiment, score = analyze_sentiment(text)
+        sentiment, score, _expl = analyze_sentiment(text)
         enriched.append({"id":idx,"text":text,"sentiment":sentiment,"score":round(score,4)})
     s = get_sentiment_stats(scraped["reviews"])
     kw = extract_keywords(scraped["reviews"], top_n=25)
@@ -828,6 +854,85 @@ def export_url(product, fmt):
 
 def export_all_url():
     return "/api/export/all/csv"
+
+# ── EMOTION LOG ───────────────────────────────────────────────────────────────
+class EmotionLog(db.Model):
+    __tablename__ = "emotion_logs"
+    id          = db.Column(db.Integer, primary_key=True)
+    user        = db.Column(db.String(80),  nullable=False)
+    dominant    = db.Column(db.String(30),  nullable=False)
+    confidence  = db.Column(db.Float,       nullable=False)
+    emotions    = db.Column(db.Text,        nullable=True)   # JSON string
+    session_id  = db.Column(db.String(40),  nullable=True)
+    created_at  = db.Column(db.DateTime,    default=lambda: datetime.now(timezone.utc))
+
+    def to_dict(self):
+        return {
+            "id": self.id, "user": self.user,
+            "dominant": self.dominant, "confidence": self.confidence,
+            "emotions": json.loads(self.emotions) if self.emotions else {},
+            "session_id": self.session_id,
+            "created_at": self.created_at.isoformat()
+        }
+
+
+@app.route("/emotion-log", methods=["POST"])
+@jwt_required()
+def log_emotion():
+    """Frontend posts detected emotion results here for persistence."""
+    body       = request.get_json() or {}
+    dominant   = body.get("dominant", "neutral")
+    confidence = float(body.get("confidence", 0.0))
+    emotions   = body.get("emotions", {})
+    session_id = body.get("session_id", "")
+    identity   = get_jwt_identity()
+
+    entry = EmotionLog(
+        user=identity,
+        dominant=dominant,
+        confidence=round(confidence, 4),
+        emotions=json.dumps(emotions),
+        session_id=session_id
+    )
+    db.session.add(entry)
+    db.session.commit()
+    return jsonify({"logged": True, "id": entry.id}), 201
+
+
+@app.route("/emotion-stats", methods=["GET"])
+@jwt_required()
+def emotion_stats():
+    """Returns per-emotion frequency stats for the current user."""
+    identity   = get_jwt_identity()
+    session_id = request.args.get("session_id")
+    limit      = int(request.args.get("limit", 200))
+
+    q = EmotionLog.query.filter_by(user=identity)
+    if session_id:
+        q = q.filter_by(session_id=session_id)
+    logs = q.order_by(EmotionLog.created_at.desc()).limit(limit).all()
+
+    counts = {}
+    conf_sum = {}
+    timeline = []
+    for lg in reversed(logs):
+        counts[lg.dominant]   = counts.get(lg.dominant, 0) + 1
+        conf_sum[lg.dominant] = conf_sum.get(lg.dominant, 0) + lg.confidence
+        timeline.append({"dominant": lg.dominant, "confidence": lg.confidence,
+                          "ts": lg.created_at.isoformat()})
+
+    total = len(logs)
+    stats = {em: {"count": c, "pct": round(c / total * 100, 1),
+                  "avg_conf": round(conf_sum[em] / c, 3)}
+             for em, c in counts.items()} if total else {}
+
+    return jsonify({
+        "total": total,
+        "stats": stats,
+        "timeline": timeline[-60:],          # last 60 readings for chart
+        "session_id": session_id
+    })
+
 
 # ── ERROR HANDLERS ────────────────────────────────────────────────────────────
 @app.errorhandler(404)

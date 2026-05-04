@@ -1,8 +1,31 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Eye, EyeOff, LogIn, TrendingUp } from "lucide-react";
+import { Eye, EyeOff, LogIn } from "lucide-react";
 import styles from "./LoginPage.module.css";
+
+// Inline SVG logo for the login page
+const SentilyticsLogo = ({ size = 44 }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="loginLogo" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#0099cc"/>
+        <stop offset="50%" stopColor="#00d4ff"/>
+        <stop offset="100%" stopColor="#00e5ff"/>
+      </linearGradient>
+    </defs>
+    <circle cx="32" cy="32" r="30" fill="url(#loginLogo)" opacity="0.15"/>
+    <circle cx="32" cy="32" r="28" stroke="url(#loginLogo)" strokeWidth="1.5" fill="none" opacity="0.3"/>
+    <path d="M10 32 L18 32 L22 18 L26 44 L30 24 L34 38 L38 20 L42 40 L46 28 L50 32 L54 32" 
+          stroke="url(#loginLogo)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    <circle cx="22" cy="18" r="2.5" fill="#00d4ff"/>
+    <circle cx="30" cy="24" r="2.5" fill="#00d4ff"/>
+    <circle cx="38" cy="20" r="2.5" fill="#00d4ff"/>
+    <circle cx="26" cy="44" r="2" fill="#00e676" opacity="0.8"/>
+    <circle cx="34" cy="38" r="2" fill="#ffca28" opacity="0.8"/>
+    <circle cx="42" cy="40" r="2" fill="#ff5252" opacity="0.8"/>
+  </svg>
+);
 
 const DEMO_ACCOUNTS = [
   { role: "Admin",   username: "admin",   password: "admin123",   color: "var(--cyan)" },
@@ -51,10 +74,10 @@ export default function LoginPage() {
         {/* Left panel */}
         <div className={styles.leftPanel}>
           <div className={styles.brand}>
-            <div className={styles.brandIcon}>✦</div>
+            <div className={styles.brandIcon}><SentilyticsLogo size={44} /></div>
             <div>
-              <h1 className={styles.brandName}>Senti</h1>
-              <p className={styles.brandTag}>ERP Analytics Platform</p>
+              <h1 className={styles.brandName}>Sentilytics</h1>
+              <p className={styles.brandTag}>AI Sentiment Analytics</p>
             </div>
           </div>
 
