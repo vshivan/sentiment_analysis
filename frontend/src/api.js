@@ -1,10 +1,18 @@
 /**
  * Sentilytics — API Client
  * All requests include JWT Bearer token via axios defaults (set in AuthContext)
+ *
+ * In development, Vite proxies /api → http://localhost:5000 (see vite.config.js).
+ * In production, set VITE_API_URL to your backend's full URL, e.g.:
+ *   VITE_API_URL=https://your-backend.onrender.com
  */
 import axios from "axios";
 
-const BASE = "/api";
+// Use VITE_API_URL env var in production; fall back to /api for dev proxy
+const BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}`
+  : "/api";
+
 const client = axios.create({ baseURL: BASE });
 
 // Attach JWT token from localStorage to every request

@@ -7,6 +7,7 @@ import os, csv, io, json, re, logging
 from datetime import datetime, timezone, timedelta
 from functools import wraps
 
+import nltk
 from flask import Flask, jsonify, request, Response, g
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -26,15 +27,42 @@ from scraper import scrape_reviews
 
 load_dotenv()
 
+# ── Download NLTK data at startup (safe to call repeatedly) ──────────────────
+for _corpus in ("punkt", "averaged_perceptron_tagger", "punkt_tab"):
+    try:
+        nltk.download(_corpus, quiet=True)
+    except Exception:
+        pass
+
 # ── App setup ────────────────────────────────────────────────────────────────
 app = Flask(__name__)
-app.config["SECRET_KEY"]                  = os.getenv("SECRET_KEY", "dev-secret")
-app.config["JWT_SECRET_KEY"]              = os.getenv("JWT_SECRET_KEY", "dev-jwt")
+
+# Secrets — must be set via environment variables in production.
+# Raises KeyError on startup if missing, preventing silent insecure defaults.
+_secret_key     = os.environ.get("SECRET_KEY")
+_jwt_secret_key = os.environ.get("JWT_SECRET_KEY")
+if not _secret_key:
+    raise RuntimeError("SECRET_KEY environment variable is not set. "
+                       "Set it to a long random string before starting the server.")
+if not _jwt_secret_key:
+    raise RuntimeError("JWT_SECRET_KEY environment variable is not set. "
+                       "Set it to a long random string before starting the server.")
+
+app.config["SECRET_KEY"]                  = _secret_key
+app.config["JWT_SECRET_KEY"]              = _jwt_secret_key
 app.config["JWT_ACCESS_TOKEN_EXPIRES"]    = timedelta(hours=8)
-app.config["SQLALCHEMY_DATABASE_URI"]     = os.getenv("DATABASE_URL", "sqlite:///senti.db")
+
+# Database — prefer DATABASE_URL (PostgreSQL in production), fall back to SQLite for local dev
+_db_url = os.environ.get("DATABASE_URL", "sqlite:///senti.db")
+# Render/Heroku provide postgres:// but SQLAlchemy needs postgresql://
+if _db_url.startswith("postgres://"):
+    _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"]     = _db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-CORS(app, resources={r"/*": {"origins": "*"}})
+# CORS — restrict to the frontend origin in production via FRONTEND_URL env var
+_frontend_url = os.environ.get("FRONTEND_URL", "*")
+CORS(app, resources={r"/*": {"origins": _frontend_url}})
 
 db      = SQLAlchemy(app)
 jwt     = JWTManager(app)
@@ -255,20 +283,31 @@ def paginate(query, page, per_page=20):
 def init_db():
     with app.app_context():
         db.create_all()
-        # Seed admin user
-        if not User.query.filter_by(username="admin").first():
-            admin = User(username="admin", email="admin@sentilytics.io",
-                         password=generate_password_hash("admin123"),
-                         role="admin")
-            analyst = User(username="analyst", email="analyst@sentilytics.io",
-                           password=generate_password_hash("analyst123"),
-                           role="analyst")
-            viewer = User(username="viewer", email="viewer@sentilytics.io",
-                          password=generate_password_hash("viewer123"),
-                          role="viewer")
-            db.session.add_all([admin, analyst, viewer])
-            db.session.commit()
-            logger.info("Seeded default users")
+
+        # ── Seed admin user from environment variables ──────────────────────
+        # Set ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD in your environment.
+        # If not set, no default users are created — you must create them manually
+        # via the /auth/register endpoint or by setting these env vars.
+        admin_username = os.environ.get("ADMIN_USERNAME")
+        admin_email    = os.environ.get("ADMIN_EMAIL")
+        admin_password = os.environ.get("ADMIN_PASSWORD")
+
+        if admin_username and admin_email and admin_password:
+            if not User.query.filter_by(username=admin_username).first():
+                admin = User(
+                    username=admin_username,
+                    email=admin_email,
+                    password=generate_password_hash(admin_password),
+                    role="admin"
+                )
+                db.session.add(admin)
+                db.session.commit()
+                logger.info(f"Seeded admin user: {admin_username}")
+        else:
+            logger.warning(
+                "ADMIN_USERNAME / ADMIN_EMAIL / ADMIN_PASSWORD not set. "
+                "No default admin user created. Set these env vars to seed one."
+            )
 
         # Seed products + reviews
         for pname, reviews in SEED_DATA.items():
@@ -951,5 +990,8 @@ def server_error(e):
 # ── STARTUP ───────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True, port=5000)
+    # debug=False in production; set DEBUG=true env var only for local dev
+    debug_mode = os.environ.get("DEBUG", "false").lower() == "true"
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=debug_mode, host="0.0.0.0", port=port)
 

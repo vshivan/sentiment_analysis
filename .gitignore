@@ -7,6 +7,18 @@ backend/*.pyo
 .env
 *.env
 
+# ── Secrets / local config ───────────────────────
+backend/.env
+frontend/.env
+# Keep .env.example files (they are safe to commit)
+!**/.env.example
+
+# ── Database (SQLite — never commit the db file) ─
+*.db
+*.sqlite
+*.sqlite3
+backend/instance/
+
 # ── Node / Frontend ──────────────────────────────
 frontend/node_modules/
 frontend/dist/

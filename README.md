@@ -77,8 +77,9 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Download NLTK data (one-time)
-python -c "import nltk; nltk.download('punkt'); nltk.download('averaged_perceptron_tagger')"
+# Copy and fill in environment variables
+cp .env.example .env
+# Edit .env — set SECRET_KEY, JWT_SECRET_KEY, ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD
 
 # Start Flask server (auto-creates & seeds the SQLite database on first run)
 python app.py
@@ -104,15 +105,52 @@ Frontend runs at: **http://localhost:3000**
 
 ---
 
-### 3. Default Login Credentials
+### 3. Login
 
-| Role     | Username   | Password      |
-|----------|------------|---------------|
-| Admin    | `admin`    | `admin123`    |
-| Analyst  | `analyst`  | `analyst123`  |
-| Viewer   | `viewer`   | `viewer123`   |
+Use the credentials you set in `ADMIN_USERNAME` / `ADMIN_PASSWORD` in your `.env` file.
+No default credentials are seeded — you must configure them via environment variables.
 
-> **Note:** Change these credentials before any public deployment.
+---
+
+## 🚀 Deploying to Render
+
+The repo includes a `render.yaml` for one-click deployment.
+
+1. Push the repo to GitHub.
+2. Go to [render.com](https://render.com) → New → Blueprint → connect your repo.
+3. Render will create the backend (Flask), frontend (static), and PostgreSQL database automatically.
+4. In the Render dashboard, set these environment variables on the **backend** service:
+   - `ADMIN_USERNAME` — your admin username
+   - `ADMIN_EMAIL` — your admin email
+   - `ADMIN_PASSWORD` — a strong password
+   - `FRONTEND_URL` — your frontend's Render URL (e.g. `https://sentilytics-frontend.onrender.com`)
+5. On the **frontend** service, set:
+   - `VITE_API_URL` — your backend's Render URL (e.g. `https://sentilytics-backend.onrender.com`)
+6. Trigger a redeploy on both services.
+
+### Manual deployment (any PaaS)
+
+**Backend:**
+```bash
+# Required env vars
+SECRET_KEY=<long-random-string>
+JWT_SECRET_KEY=<another-long-random-string>
+DATABASE_URL=postgresql://user:pass@host:5432/dbname
+ADMIN_USERNAME=youradmin
+ADMIN_EMAIL=admin@yourdomain.com
+ADMIN_PASSWORD=<strong-password>
+FRONTEND_URL=https://your-frontend-domain.com
+
+# Start command
+gunicorn app:app --workers 4 --bind 0.0.0.0:$PORT --timeout 120
+```
+
+**Frontend:**
+```bash
+# Build
+VITE_API_URL=https://your-backend-domain.com npm run build
+# Serve the dist/ folder as static files
+```
 
 ---
 

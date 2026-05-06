@@ -1,0 +1,41 @@
+services:
+  # ── Backend (Flask API) ────────────────────────────────────────────────────
+  - type: web
+    name: sentilytics-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 4 --bind 0.0.0.0:$PORT --timeout 120
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentilytics-db
+          property: connectionString
+      - key: ADMIN_USERNAME
+        sync: false   # set manually in Render dashboard
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: FRONTEND_URL
+        sync: false   # set to your frontend URL after deploying frontend
+
+  # ── Frontend (React/Vite static site) ─────────────────────────────────────
+  - type: web
+    name: sentilytics-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false   # set to your backend URL, e.g. https://sentilytics-backend.onrender.com
+
+databases:
+  - name: sentilytics-db
+    databaseName: sentilytics
+    user: sentilytics

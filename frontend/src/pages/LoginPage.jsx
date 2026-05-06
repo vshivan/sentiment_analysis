@@ -27,12 +27,6 @@ const SentilyticsLogo = ({ size = 44 }) => (
   </svg>
 );
 
-const DEMO_ACCOUNTS = [
-  { role: "Admin",   username: "admin",   password: "admin123",   color: "var(--cyan)" },
-  { role: "Analyst", username: "analyst", password: "analyst123", color: "var(--positive)" },
-  { role: "Viewer",  username: "viewer",  password: "viewer123",  color: "var(--neutral)" },
-];
-
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -51,16 +45,10 @@ export default function LoginPage() {
       await login(username.trim(), password);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.error || "Login failed. Check credentials.");
+      setError(err.response?.data?.error || "Login failed. Check your credentials.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const fillDemo = (acc) => {
-    setUsername(acc.username);
-    setPassword(acc.password);
-    setError("");
   };
 
   return (
@@ -162,20 +150,6 @@ export default function LoginPage() {
                 }
               </button>
             </form>
-
-            {/* Demo accounts */}
-            <div className={styles.demoSection}>
-              <p className={styles.demoLabel}>Demo accounts</p>
-              <div className={styles.demoCards}>
-                {DEMO_ACCOUNTS.map(acc => (
-                  <button key={acc.role} className={styles.demoCard}
-                    onClick={() => fillDemo(acc)} type="button">
-                    <span className={styles.demoRole} style={{ color: acc.color }}>{acc.role}</span>
-                    <span className={styles.demoUser}>{acc.username}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
