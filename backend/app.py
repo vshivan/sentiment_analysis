@@ -70,15 +70,9 @@ CORS(app, resources={r"/*": {"origins": _frontend_url}})
 
 db      = SQLAlchemy(app)
 jwt     = JWTManager(app)
-# Use database-backed storage for rate limiter in production so limits
-# persist across worker restarts. Falls back to in-memory for local dev (no DATABASE_URL).
-_limiter_storage = "memory://"
-if os.environ.get("DATABASE_URL"):
-    _limiter_storage = os.environ.get("DATABASE_URL", "memory://")
-    if _limiter_storage.startswith("postgres://"):
-        _limiter_storage = _limiter_storage.replace("postgres://", "postgresql://", 1)
+# Use in-memory storage for rate limiter (sufficient for single-instance free tier)
 limiter = Limiter(key_func=get_remote_address, app=app,
-                  storage_uri=_limiter_storage,
+                  storage_uri="memory://",
                   default_limits=["500 per hour", "100 per minute"])
 
 logging.basicConfig(level=logging.INFO,
