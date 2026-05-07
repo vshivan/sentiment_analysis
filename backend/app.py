@@ -1,4 +1,4 @@
-"""
+﻿"""
 Sentilytics - Complete Backend API
 Sprint 1: Auth + SQLite + Validation + Rate Limiting + Audit Log
 Sprint 2: Pagination + Date stamps + RBAC + Excel export
@@ -21,11 +21,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
+from pathlib import Path
 
 from sentiment import analyze_sentiment, analyze_image_sentiment, get_sentiment_stats, extract_keywords
 from scraper import scrape_reviews
 
-load_dotenv()
+# Load .env from the backend package directory to support running from different working directories.
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 # ── Download NLTK data at startup (safe to call repeatedly) ──────────────────
 for _corpus in ("punkt", "averaged_perceptron_tagger", "punkt_tab"):
@@ -994,8 +997,10 @@ def server_error(e):
     return jsonify({"error": "Internal server error"}), 500
 
 # ── STARTUP ───────────────────────────────────────────────────────────────────
+# Call init_db() at module level so it runs under both gunicorn and direct execution
+init_db()
+
 if __name__ == "__main__":
-    init_db()
     # debug=False in production; set DEBUG=true env var only for local dev
     debug_mode = os.environ.get("DEBUG", "false").lower() == "true"
     port = int(os.environ.get("PORT", 5000))
