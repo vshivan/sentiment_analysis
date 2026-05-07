@@ -54,12 +54,12 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"]    = timedelta(hours=8)
 
 # Database — prefer DATABASE_URL (PostgreSQL in production), fall back to SQLite for local dev
 _db_url = os.environ.get("DATABASE_URL", "sqlite:///senti.db")
-# Render/Heroku provide postgres:// but SQLAlchemy needs postgresql://
+# Render/Heroku provide postgres:// — fix to postgresql://
 if _db_url.startswith("postgres://"):
     _db_url = _db_url.replace("postgres://", "postgresql://", 1)
-# On Python 3.12+ psycopg2-binary is unavailable; use psycopg3 dialect instead
-import sys as _sys
-if _sys.version_info >= (3, 12) and _db_url.startswith("postgresql://"):
+# Use psycopg3 dialect (psycopg[binary]) — works on all Python versions including 3.14
+# psycopg2 is not compatible with Python 3.12+
+if _db_url.startswith("postgresql://") and "+psycopg" not in _db_url:
     _db_url = _db_url.replace("postgresql://", "postgresql+psycopg://", 1)
 app.config["SQLALCHEMY_DATABASE_URI"]     = _db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

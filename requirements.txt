@@ -14,5 +14,4 @@ python-dotenv==1.0.1
 werkzeug==3.0.3
 Pillow>=10.4.0
 gunicorn==22.0.0
-psycopg2-binary==2.9.9; python_version < "3.12"
-psycopg[binary]==3.2.3; python_version >= "3.12"
+psycopg[binary]==3.2.3
